@@ -1,0 +1,45 @@
+---
+title: "Modeling"
+author: "Jay Hesselberth"
+date: "March 11, 2015"
+output: html_document
+---
+
+```{r load.libs, warning = FALSE, message = FALSE}
+require(dplyr)
+require(nihexporter)
+```
+
+Model the number of publications as a function of duration, dollars and activity code.
+
+```{r pub.model.1}
+activity.spec <- c('R01','P01')
+projects_data <- projects %>%
+#   filter(activity %in% activity.spec) %>%
+  select(project.num, activity, project.start, project.end, total.cost) %>%
+  group_by(project.num, activity) %>%
+  summarize(duration = max(project.end) - min(project.start),
+            dollars = sum(total.cost)) %>%
+  filter(!is.na(duration) & dollars > 0)
+
+projects_data
+
+pub_data <- projects_data %>%
+  inner_join(publinks) %>%
+  group_by(project.num) %>%
+  summarize(n.pubs = n()) %>%
+  select(project.num, n.pubs)
+
+pub_data
+
+model_tbl <- projects_data %>%
+  inner_join(pub_data) %>%
+  select(activity, duration, dollars, n.pubs)
+
+model_tbl
+
+lmfit <- lm(n.pubs ~ duration + dollars + activity,  data = model_tbl)
+
+par(mfrow = c(2,2))
+plot(lmfit)
+```
