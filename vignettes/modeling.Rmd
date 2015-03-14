@@ -7,6 +7,7 @@ output: html_document
 
 ```{r load.libs, warning = FALSE, message = FALSE}
 require(dplyr)
+require(sjPlot)
 require(nihexporter)
 ```
 
@@ -49,7 +50,9 @@ model_tbl <- projects_data %>%
 
 model_tbl
 
-lmfit <- sjp.lm(n.pubs ~ duration + dollars + activity,  data = model_tbl)
+lmfit <- lm(log(n.pubs) ~ duration + dollars + activity,  data = model_tbl)
+lmfit2 <- lm(log(dollars / n.pubs) ~ duration + activity,  data = model_tbl)
+
 
 par(mfrow = c(2,2))
 plot(lmfit)

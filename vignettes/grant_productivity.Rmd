@@ -17,7 +17,7 @@ When Jeremy Berg was head of NIGMS, he routinely provided a variety of summary s
 Here we flesh out this analysis and look at under- and overperformers by this measure. In addition, Berg was focused on GM, and here we can easily look at similar measures across the NIH institutes. One caveat is that we only have access to `total.cost` in NIH EXPORTER, so the numbers include indirect costs. But, this is real cost to the tax-payer.
 
 # Analysis
-```{r, message = FALSE}
+```{r load.libs, message = FALSE}
 library(dplyr)
 library(ggplot2)
 library(knitr)
@@ -150,11 +150,11 @@ productivity_with_counts %>%
   # need to remove higher tiles because there are too few grants
   filter(dollar.tile <= 13) %>%
   ggplot(aes(x = factor(dollar.tile), y = n.pubs, fill = tile.counts)) +
-  geom_boxplot() +
+  geom_boxplot(outlier.shape = NA) +
   scale_x_discrete(labels = breaks / 1e6) + 
   theme(axis.text.x = element_text(angle=45, vjust=0.8)) + 
   scale_y_log10() +
-  facet_wrap(~ institute) +
+  facet_wrap(~ institute, scales = "free_x") +
   ylab('Number of publications') +
   xlab('Total costs (minimum, in millions)')
 ```
